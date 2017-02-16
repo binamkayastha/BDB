@@ -1,5 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
+#include <unistd.h>
 
 int main(int argc, char *argv[]) {
     /*
@@ -31,20 +33,40 @@ int main(int argc, char *argv[]) {
 
 
     // lineBuffer, assuming that the line in the script isn't goin to be more than 1024 characters long.
-    char *lineBuffer = (char *) malloc(sizeof(char)* 1024);
+    //char *lineBuffer = (char *) malloc(sizeof(char)* 1024);
     // Size of lineBuffer
-    int lineBufferMaxSize = sizeof(char) * 1024;
+    //int lineBufferMaxSize = sizeof(char) * 1024;
 
 
 
     // Used to keep track of line number in code
     int lineNum = 1;
+    char *lineStr = NULL;
+    size_t n = 0;
 
     if(file) {
-        while (fgets(lineBuffer, lineBufferMaxSize, file) != NULL) {
-            printf("%i: %s", lineNum, lineBuffer);
+        // Keep reading lines until
+        while(getline(&lineStr, &n, file) != -1) {
+            printf("%d: %s", lineNum, lineStr); // Doesn't need new line character, as it takes it in from the input file
+
+            printf("> "); // Doesn't need new line character as it takes it in from user input
+
+            while(getchar()!='\n'); // Ignore any non enter input
+
+            const char * command = (const char *) lineStr;
+            system(command);
+
+
             lineNum++;
+
+            // Reset line inputs for getline
+            lineStr = NULL;
+            n = 0;
         }
+        //while (fgets(lineBuffer, lineBufferMaxSize, file) != NULL) {
+        //    printf("%i: %s", lineNum, lineBuffer);
+        //    lineNum++;
+        //}
         fclose(file);
     }
 
