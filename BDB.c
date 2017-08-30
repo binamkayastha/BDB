@@ -3,6 +3,14 @@
 #include <string.h>
 #include <unistd.h>
 
+/**
+ *didlidlidodo
+ * echo $$
+ * echo 'hi' > /proc/$bashpid/fd/0
+ * bash --rcfile <(echo '. ~/.bashrc; some_command')
+ * strace -p1234 -e trace= -e write=0
+ */
+
 int main(int argc, char *argv[]) {
     /*
      * Take arg as shell script file input.
@@ -32,10 +40,11 @@ int main(int argc, char *argv[]) {
     }
 
 
-    // lineBuffer, assuming that the line in the script isn't goin to be more than 1024 characters long.
-    //char *lineBuffer = (char *) malloc(sizeof(char)* 1024);
+    // lineBuffer, assuming that the line in the script isn't going to be more
+    //      than 1024 characters long.
+    //  char *lineBuffer = (char *) malloc(sizeof(char)* 1024);
     // Size of lineBuffer
-    //int lineBufferMaxSize = sizeof(char) * 1024;
+    //  int lineBufferMaxSize = sizeof(char) * 1024;
 
 
 
@@ -45,17 +54,16 @@ int main(int argc, char *argv[]) {
     size_t n = 0;
 
     if(file) {
-        // Keep reading lines until
+        // Keep reading lines until file endup
         while(getline(&lineStr, &n, file) != -1) {
-            printf("%d: %s", lineNum, lineStr); // Doesn't need new line character, as it takes it in from the input file
-
-            printf("> "); // Doesn't need new line character as it takes it in from user input
-
-            while(getchar()!='\n'); // Ignore any non enter input
+            // Newline characters already exist in lineStr
+            printf("%d: %s", lineNum, lineStr); 
+            printf("> ");
+            // Ignore any non enter input
+            while(getchar()!='\n');
 
             const char * command = (const char *) lineStr;
             system(command);
-
 
             lineNum++;
 
@@ -63,6 +71,7 @@ int main(int argc, char *argv[]) {
             lineStr = NULL;
             n = 0;
         }
+        // Debugging lines
         //while (fgets(lineBuffer, lineBufferMaxSize, file) != NULL) {
         //    printf("%i: %s", lineNum, lineBuffer);
         //    lineNum++;
